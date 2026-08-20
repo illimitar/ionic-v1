@@ -1,5 +1,5 @@
 // package metadata file for Meteor.js
-var packageName = 'HeronSantosCom:ionic'; // https://atmospherejs.com/HeronSantosCom/ionic
+var packageName = 'illimitar:ionic'; // https://atmospherejs.com/illimitar/ionic
 var where = 'client'; // where to install: 'client' or 'server'. For both, pass nothing.
 var version = '1.3.22';
 
@@ -7,7 +7,7 @@ Package.describe({
   name: packageName,
   version: version,
   summary: 'Ionic Framework official Meteor package',
-  git: 'git@github.com:HeronSantosCom/ionic.git'
+  git: 'git@github.com:illimitar/ionic.git'
 });
 
 Package.onUse(function(api) {

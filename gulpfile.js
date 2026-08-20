@@ -96,7 +96,7 @@ function makeChangelog(options) {
   var version = options.version || pkg.version;
   var deferred = q.defer();
   changelog({
-    repository: 'https://github.com/HeronSantosCom/ionic',
+    repository: 'https://github.com/illimitar/ionic',
     version: version,
     subtitle: subtitle,
     file: file,
@@ -337,7 +337,7 @@ gulp.task('release-github', function(done) {
   .then(function(log) {
     var version = 'v' + pkg.version;
     github.releases.createRelease({
-      owner: 'HeronSantosCom',
+      owner: 'illimitar',
       repo: 'ionic',
       tag_name: version,
       name: version + ' "' + pkg.codename + '"',
@@ -355,7 +355,7 @@ gulp.task('release-discourse', function(done) {
     standalone: true
   })
   .then(function(changelog) {
-    var content = 'Download Instructions: https://github.com/HeronSantosCom/ionic#quick-start\n\n' + changelog;
+    var content = 'Download Instructions: https://github.com/illimitar/ionic#quick-start\n\n' + changelog;
     return qRequest({
       url: 'http://forum.ionicframework.com/posts',
       method: 'post',

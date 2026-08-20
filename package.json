@@ -4,7 +4,7 @@
   "version": "1.3.22",
   "codename": "manaus",
   "repository": {
-    "url": "git://github.com/HeronSantosCom/ionic-v1.git"
+    "url": "git://github.com/illimitar/ionic-v1.git"
   },
   "devDependencies": {
     "canonical-path": "0.0.2",

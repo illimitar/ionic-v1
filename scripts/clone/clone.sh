@@ -21,7 +21,7 @@ function run {
   git config --global user.email "heron@illi.com.br"
   git config --global user.name "Heron Santos"
 
-  git clone git@github.com:HeronSantosCom/$REPOSITORY.git $DIRECTORY $ARGS
+  git clone git@github.com:illimitar/$REPOSITORY.git $DIRECTORY $ARGS
   cd $DIRECTORY
   git fetch origin --tags
   cd ../
