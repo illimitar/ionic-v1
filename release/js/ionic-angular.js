@@ -12840,7 +12840,19 @@ IonicModule.directive('select', ['$ionicModal', '$timeout', function($ionicModal
         });
       }
 
+      function preventNativeFocus(event) {
+        // O ionic.tap (js/utils/tap.js) ignora deliberadamente o proprio
+        // sistema de toque quando o alvo e um <select> e, no Android, ate
+        // forca foco nele para abrir o picker nativo. Isso acontece no
+        // mousedown/touchstart, antes do 'click' - bloquear soh o preventDefault
+        // aqui evita o picker nativo sem impedir o 'click' que abre o modal.
+        if (!select.disabled) {
+          event.preventDefault();
+        }
+      }
+
       angular.element(container).on('click', open);
+      angular.element(container).on('mousedown touchstart', preventNativeFocus);
       element.on('change', syncDisplay);
       scope.$watch(function() {
         var selected = select.options[select.selectedIndex];
@@ -12859,6 +12871,7 @@ IonicModule.directive('select', ['$ionicModal', '$timeout', function($ionicModal
 
       scope.$on('$destroy', function() {
         angular.element(container).off('click', open);
+        angular.element(container).off('mousedown touchstart', preventNativeFocus);
         element.off('change', syncDisplay);
         observer && observer.disconnect();
         modal && modal.remove();
