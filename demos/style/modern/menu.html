@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html ng-app="modernMenuDemo">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+  <title>Ionic v1 modern menu</title>
+  <link href="../../../release/css/ionic.css" rel="stylesheet">
+</head>
+<body>
+  <ion-side-menus>
+    <ion-side-menu-content>
+      <ion-header-bar class="bar-positive">
+        <button class="button button-icon ion-navicon" menu-toggle="left"></button>
+        <h1 class="title">Modulos</h1>
+      </ion-header-bar>
+      <ion-content class="has-header padding">
+        <div class="list card">
+          <div class="item item-divider">Operacoes recentes</div>
+          <div class="item item-icon-left"><i class="icon ion-cube positive"></i>Separar pedido<p>Pronto para iniciar</p></div>
+          <div class="item item-icon-left"><i class="icon ion-printer positive"></i>Impressoras<p>3 dispositivos ativos</p></div>
+        </div>
+      </ion-content>
+    </ion-side-menu-content>
+
+    <ion-side-menu side="left" width="292">
+      <ion-header-bar class="bar-positive">
+        <h1 class="title">illiGestor</h1>
+      </ion-header-bar>
+      <ion-content class="has-header">
+        <div class="item item-input-inset">
+          <label class="item-input-wrapper">
+            <i class="icon ion-search placeholder-icon"></i>
+            <input type="search" placeholder="Filtrar modulos">
+          </label>
+        </div>
+        <ion-list>
+          <ion-item menu-close>Inicio</ion-item>
+          <ion-item menu-close>Pedidos</ion-item>
+          <ion-item menu-close>Inventario</ion-item>
+          <ion-item menu-close>Relatorios</ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-side-menu>
+  </ion-side-menus>
+
+  <script src="../../../release/js/ionic.bundle.js"></script>
+  <script>angular.module('modernMenuDemo', ['ionic']);</script>
+</body>
+</html>

@@ -2,7 +2,7 @@
  * Copyright 2015 Drifty Co.
  * http://drifty.com/
  *
- * Ionic, v1.3.3
+ * Ionic, v1.3.23
  * A powerful HTML5 mobile app framework.
  * http://ionicframework.com/
  *
@@ -578,6 +578,128 @@ function($document, $ionicBody, $timeout) {
       removeClickBlock();
     }
   };
+}]);
+
+/**
+ * ==================  angular-ios9-uiwebview.patch.js v1.1.1 ==================
+ *
+ * This patch works around iOS9 UIWebView regression that causes infinite digest
+ * errors in Angular.
+ *
+ * The patch can be applied to Angular 1.2.0 – 1.4.5. Newer versions of Angular
+ * have the workaround baked in.
+ *
+ * To apply this patch load/bundle this file with your application and add a
+ * dependency on the "ngIOS9UIWebViewPatch" module to your main app module.
+ *
+ * For example:
+ *
+ * ```
+ * angular.module('myApp', ['ngRoute'])`
+ * ```
+ *
+ * becomes
+ *
+ * ```
+ * angular.module('myApp', ['ngRoute', 'ngIOS9UIWebViewPatch'])
+ * ```
+ *
+ *
+ * More info:
+ * - https://openradar.appspot.com/22186109
+ * - https://github.com/angular/angular.js/issues/12241
+ * - https://github.com/ionic-team/ionic/issues/4082
+ *
+ *
+ * @license AngularJS
+ * (c) 2010-2015 Google, Inc. http://angularjs.org
+ * License: MIT
+ */
+
+angular.module('ngIOS9UIWebViewPatch', ['ng']).config(['$provide', function($provide) {
+  'use strict';
+
+  $provide.decorator('$browser', ['$delegate', '$window', function($delegate, $window) {
+
+    if (isIOS9UIWebView($window.navigator.userAgent)) {
+      return applyIOS9Shim($delegate);
+    }
+
+    return $delegate;
+
+    function isIOS9UIWebView(userAgent) {
+      return /(iPhone|iPad|iPod).* OS 9_\d/.test(userAgent) && !/Version\/9\./.test(userAgent);
+    }
+
+    function applyIOS9Shim(browser) {
+      var pendingLocationUrl = null;
+      var originalUrlFn = browser.url;
+
+      browser.url = function() {
+        if (arguments.length) {
+          pendingLocationUrl = arguments[0];
+          return originalUrlFn.apply(browser, arguments);
+        }
+
+        return pendingLocationUrl || originalUrlFn.apply(browser, arguments);
+      };
+
+      window.addEventListener('popstate', clearPendingLocationUrl, false);
+      window.addEventListener('hashchange', clearPendingLocationUrl, false);
+
+      function clearPendingLocationUrl() {
+        pendingLocationUrl = null;
+      }
+
+      return browser;
+    }
+  }]);
+}]);
+
+/**
+ * @private
+ * Parts of Ionic requires that $scope data is attached to the element.
+ * We do not want to disable adding $scope data to the $element when
+ * $compileProvider.debugInfoEnabled(false) is used.
+ */
+IonicModule.config(['$provide', function($provide) {
+  $provide.decorator('$compile', ['$delegate', function($compile) {
+     $compile.$$addScopeInfo = function $$addScopeInfo($element, scope, isolated, noTemplate) {
+       var dataName = isolated ? (noTemplate ? '$isolateScopeNoTemplate' : '$isolateScope') : '$scope';
+       $element.data(dataName, scope);
+     };
+     return $compile;
+  }]);
+}]);
+
+/**
+ * @private
+ */
+IonicModule.config([
+  '$provide',
+function($provide) {
+  function $LocationDecorator($location, $timeout) {
+
+    $location.__hash = $location.hash;
+    //Fix: when window.location.hash is set, the scrollable area
+    //found nearest to body's scrollTop is set to scroll to an element
+    //with that ID.
+    $location.hash = function(value) {
+      if (isDefined(value) && value.length > 0) {
+        $timeout(function() {
+          var scroll = document.querySelector('.scroll-content');
+          if (scroll) {
+            scroll.scrollTop = 0;
+          }
+        }, 0, false);
+      }
+      return $location.__hash(value);
+    };
+
+    return $location;
+  }
+
+  $provide.decorator('$location', ['$delegate', '$timeout', $LocationDecorator]);
 }]);
 
 /**
@@ -5184,128 +5306,6 @@ function($timeout, $document, $q, $ionicClickBlock, $ionicConfig, $ionicNavBarDe
     return aggregate;
   }
 
-}]);
-
-/**
- * ==================  angular-ios9-uiwebview.patch.js v1.1.1 ==================
- *
- * This patch works around iOS9 UIWebView regression that causes infinite digest
- * errors in Angular.
- *
- * The patch can be applied to Angular 1.2.0 – 1.4.5. Newer versions of Angular
- * have the workaround baked in.
- *
- * To apply this patch load/bundle this file with your application and add a
- * dependency on the "ngIOS9UIWebViewPatch" module to your main app module.
- *
- * For example:
- *
- * ```
- * angular.module('myApp', ['ngRoute'])`
- * ```
- *
- * becomes
- *
- * ```
- * angular.module('myApp', ['ngRoute', 'ngIOS9UIWebViewPatch'])
- * ```
- *
- *
- * More info:
- * - https://openradar.appspot.com/22186109
- * - https://github.com/angular/angular.js/issues/12241
- * - https://github.com/ionic-team/ionic/issues/4082
- *
- *
- * @license AngularJS
- * (c) 2010-2015 Google, Inc. http://angularjs.org
- * License: MIT
- */
-
-angular.module('ngIOS9UIWebViewPatch', ['ng']).config(['$provide', function($provide) {
-  'use strict';
-
-  $provide.decorator('$browser', ['$delegate', '$window', function($delegate, $window) {
-
-    if (isIOS9UIWebView($window.navigator.userAgent)) {
-      return applyIOS9Shim($delegate);
-    }
-
-    return $delegate;
-
-    function isIOS9UIWebView(userAgent) {
-      return /(iPhone|iPad|iPod).* OS 9_\d/.test(userAgent) && !/Version\/9\./.test(userAgent);
-    }
-
-    function applyIOS9Shim(browser) {
-      var pendingLocationUrl = null;
-      var originalUrlFn = browser.url;
-
-      browser.url = function() {
-        if (arguments.length) {
-          pendingLocationUrl = arguments[0];
-          return originalUrlFn.apply(browser, arguments);
-        }
-
-        return pendingLocationUrl || originalUrlFn.apply(browser, arguments);
-      };
-
-      window.addEventListener('popstate', clearPendingLocationUrl, false);
-      window.addEventListener('hashchange', clearPendingLocationUrl, false);
-
-      function clearPendingLocationUrl() {
-        pendingLocationUrl = null;
-      }
-
-      return browser;
-    }
-  }]);
-}]);
-
-/**
- * @private
- * Parts of Ionic requires that $scope data is attached to the element.
- * We do not want to disable adding $scope data to the $element when
- * $compileProvider.debugInfoEnabled(false) is used.
- */
-IonicModule.config(['$provide', function($provide) {
-  $provide.decorator('$compile', ['$delegate', function($compile) {
-     $compile.$$addScopeInfo = function $$addScopeInfo($element, scope, isolated, noTemplate) {
-       var dataName = isolated ? (noTemplate ? '$isolateScopeNoTemplate' : '$isolateScope') : '$scope';
-       $element.data(dataName, scope);
-     };
-     return $compile;
-  }]);
-}]);
-
-/**
- * @private
- */
-IonicModule.config([
-  '$provide',
-function($provide) {
-  function $LocationDecorator($location, $timeout) {
-
-    $location.__hash = $location.hash;
-    //Fix: when window.location.hash is set, the scrollable area
-    //found nearest to body's scrollTop is set to scroll to an element
-    //with that ID.
-    $location.hash = function(value) {
-      if (isDefined(value) && value.length > 0) {
-        $timeout(function() {
-          var scroll = document.querySelector('.scroll-content');
-          if (scroll) {
-            scroll.scrollTop = 0;
-          }
-        }, 0, false);
-      }
-      return $location.__hash(value);
-    };
-
-    return $location;
-  }
-
-  $provide.decorator('$location', ['$delegate', '$timeout', $LocationDecorator]);
 }]);
 
 IonicModule
@@ -12639,6 +12639,225 @@ function($timeout, $controller, $ionicBind, $ionicConfig) {
           });
         }
       }
+    }
+  };
+}]);
+
+/**
+ * Presents existing item-select controls in a searchable Ionic modal without
+ * changing their native select or Angular model contract.
+ */
+IonicModule.directive('select', ['$ionicModal', '$timeout', function($ionicModal, $timeout) {
+  return {
+    restrict: 'E',
+    link: function(scope, element) {
+      var select = element[0];
+      var container = select.parentNode;
+      var modal;
+      var modalScope;
+      var display;
+      var displayValue;
+      var observer;
+      var opening = false;
+
+      if (!container || !container.classList.contains('item-select') || select.multiple) {
+        return;
+      }
+
+      display = angular.element(
+        '<button type="button" class="modern-select-display" aria-haspopup="dialog">' +
+          '<span class="modern-select-display-value"></span>' +
+          '<span class="modern-select-display-action" aria-hidden="true">' +
+            '<i class="icon ion-chevron-down"></i>' +
+          '</span>' +
+        '</button>'
+      );
+      displayValue = display[0].querySelector('.modern-select-display-value');
+
+      element.addClass('modern-select-native');
+      element.attr('aria-hidden', 'true');
+      element.attr('tabindex', '-1');
+      angular.element(container).addClass('modern-select-enhanced');
+      container.insertBefore(display[0], select.nextSibling);
+
+      function getTitle() {
+        var label = container.querySelector('.input-label');
+        var text = label && label.textContent.replace(/^\s+|\s+$/g, '');
+        return text || select.getAttribute('aria-label') || 'Selecionar opcao';
+      }
+
+      function getPlaceholder() {
+        return select.getAttribute('placeholder') || 'Selecionar...';
+      }
+
+      function getOptionText(option) {
+        var text = option.textContent.replace(/^\s+|\s+$/g, '');
+        return text || (option.value === '' ? getPlaceholder() : option.value);
+      }
+
+      function readGroups() {
+        var groups = [];
+        var groupsByLabel = {};
+        var options = select.options;
+        var i;
+        var option;
+        var parent;
+        var label;
+        var key;
+        var group;
+
+        for (i = 0; i < options.length; i++) {
+          option = options[i];
+          if (option.value === '?') {
+            continue;
+          }
+          parent = option.parentNode;
+          label = parent && parent.tagName === 'OPTGROUP' ? parent.label : '';
+          key = label || '__ungrouped__';
+          group = groupsByLabel[key];
+
+          if (!group) {
+            group = groupsByLabel[key] = { label: label, options: [] };
+            groups.push(group);
+          }
+
+          group.options.push({
+            index: i,
+            text: getOptionText(option),
+            disabled: option.disabled || (parent && parent.disabled),
+            selected: option.selected
+          });
+        }
+
+        return groups;
+      }
+
+      function filterGroups() {
+        var query = (modalScope.search.query || '').toLowerCase();
+        var filtered = [];
+
+        angular.forEach(modalScope.groups, function(group) {
+          var options = [];
+          angular.forEach(group.options, function(option) {
+            if (!query || option.text.toLowerCase().indexOf(query) !== -1) {
+              options.push(option);
+            }
+          });
+          if (options.length) {
+            filtered.push({ label: group.label, options: options });
+          }
+        });
+
+        modalScope.filteredGroups = filtered;
+      }
+
+      function syncDisplay() {
+        var option = select.options[select.selectedIndex];
+        var title = getTitle();
+
+        displayValue.textContent = option ? getOptionText(option) : getPlaceholder();
+        display.toggleClass('is-placeholder', !option || (option.value === '' && !option.textContent.trim()));
+        display.attr('aria-label', title + ': ' + displayValue.textContent);
+        display[0].disabled = select.disabled;
+        angular.element(container).toggleClass('item-select-disabled', select.disabled);
+      }
+
+      function createModal() {
+        modal = $ionicModal.fromTemplate(
+          '<ion-modal-view class="modern-select-modal">' +
+            '<ion-header-bar class="bar-positive modern-select-modal-header">' +
+              '<h1 class="title">{{title}}</h1>' +
+              '<button type="button" class="button button-icon ion-close-round" ' +
+                'aria-label="Fechar" ng-click="close()"></button>' +
+            '</ion-header-bar>' +
+            '<ion-content class="has-header modern-select-modal-content">' +
+              '<div class="modern-select-search">' +
+                '<i class="icon ion-ios-search-strong" aria-hidden="true"></i>' +
+                '<input type="search" placeholder="Filtrar op&ccedil;&otilde;es" aria-label="Filtrar op&ccedil;&otilde;es" ' +
+                  'ng-model="search.query" ng-change="filter()">' +
+              '</div>' +
+              '<div class="modern-select-empty" ng-if="!filteredGroups.length">Nenhuma op&ccedil;&atilde;o encontrada</div>' +
+              '<div class="modern-select-options" ng-repeat="group in filteredGroups">' +
+                '<div class="item item-divider" ng-if="group.label">{{group.label}}</div>' +
+                '<button type="button" class="item modern-select-option" ' +
+                  'ng-repeat="option in group.options" ng-disabled="option.disabled" ' +
+                  'ng-class="{selected: option.selected}" ng-click="choose(option)">' +
+                  '<span>{{option.text}}</span>' +
+                  '<i class="icon ion-checkmark-round" aria-hidden="true" ng-if="option.selected"></i>' +
+                '</button>' +
+              '</div>' +
+            '</ion-content>' +
+          '</ion-modal-view>',
+          {
+            animation: 'slide-in-up',
+            focusFirstInput: true,
+            backdropClickToClose: true
+          }
+        );
+        modalScope = modal.scope;
+        modalScope.close = function() {
+          modal.hide();
+        };
+        modalScope.search = { query: '' };
+        modalScope.filter = filterGroups;
+        modalScope.choose = function(option) {
+          if (option.disabled) {
+            return;
+          }
+          modal.hide();
+          $timeout(function() {
+            select.selectedIndex = option.index;
+            element.triggerHandler('change');
+            syncDisplay();
+          }, 0, false);
+        };
+      }
+
+      function open(event) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        if (select.disabled || opening || (modal && modal.isShown())) {
+          return;
+        }
+        if (!modal) {
+          createModal();
+        }
+
+        opening = true;
+        modalScope.title = getTitle();
+        modalScope.search.query = '';
+        modalScope.groups = readGroups();
+        filterGroups();
+        modal.show().then(function() {
+          opening = false;
+        });
+      }
+
+      angular.element(container).on('click', open);
+      element.on('change', syncDisplay);
+      scope.$watch(function() {
+        var selected = select.options[select.selectedIndex];
+        return [select.selectedIndex, select.disabled, select.options.length,
+          selected && selected.textContent].join('|');
+      }, syncDisplay);
+
+      if (window.MutationObserver) {
+        observer = new window.MutationObserver(function() {
+          scope.$evalAsync(syncDisplay);
+        });
+        observer.observe(select, { childList: true, subtree: true, attributes: true });
+      }
+
+      syncDisplay();
+
+      scope.$on('$destroy', function() {
+        angular.element(container).off('click', open);
+        element.off('change', syncDisplay);
+        observer && observer.disconnect();
+        modal && modal.remove();
+      });
     }
   };
 }]);

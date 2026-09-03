@@ -1,7 +1,7 @@
 // package metadata file for Meteor.js
 var packageName = 'illimitar:ionic'; // https://atmospherejs.com/illimitar/ionic
 var where = 'client'; // where to install: 'client' or 'server'. For both, pass nothing.
-var version = '1.3.22';
+var version = '1.3.23';
 
 Package.describe({
   name: packageName,

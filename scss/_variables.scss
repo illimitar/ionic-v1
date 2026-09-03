@@ -39,6 +39,25 @@ $headings-line-height:            1.2 !default;
 $base-background-color:           #fff !default;
 $base-color:                      #000 !default;
 
+// Modern theme
+// -------------------------------
+
+$modern-page-bg:                  #f3f6fa !default;
+$modern-surface:                  #fff !default;
+$modern-surface-muted:            #f7f9fc !default;
+$modern-text:                     #172033 !default;
+$modern-text-muted:               #65748b !default;
+$modern-border:                   #dbe3ec !default;
+$modern-divider:                  #e8edf3 !default;
+$modern-focus-ring:               rgba($positive, .22) !default;
+$modern-radius-small:             6px !default;
+$modern-radius:                   8px !default;
+$modern-radius-large:             12px !default;
+$modern-shadow-small:             0 1px 2px rgba(23, 32, 51, .06) !default;
+$modern-shadow:                   0 6px 18px rgba(23, 32, 51, .10) !default;
+$modern-shadow-large:             0 18px 48px rgba(23, 32, 51, .18) !default;
+$modern-control-height:           44px !default;
+
 $link-color:                      $positive !default;
 $link-hover-color:                darken($link-color, 15%) !default;
 
@@ -689,6 +708,7 @@ $badge-default-text:              #AAAAAA !default;
 
 $spinner-width:                   28px !default;
 $spinner-height:                  28px !default;
+$spinner-standard-image:          "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHN0eWxlPSJzaGFwZS1yZW5kZXJpbmc6IGF1dG87IGRpc3BsYXk6IGJsb2NrOyBiYWNrZ3JvdW5kOiB0cmFuc3BhcmVudDsiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48Zz48cGF0aCBzdHlsZT0idHJhbnNmb3JtOnNjYWxlKDAuOCk7dHJhbnNmb3JtLW9yaWdpbjo1MHB4IDUwcHgiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBkPSJNMjQuMyAzMEMxMS40IDMwIDUgNDMuMyA1IDUwczYuNCAyMCAxOS4zIDIwYzE5LjMgMCAzMi4xLTQwIDUxLjQtNDAgQzg4LjYgMzAgOTUgNDMuMyA5NSA1MHMtNi40IDIwLTE5LjMgMjBDNTYuNCA3MCA0My42IDMwIDI0LjMgMzB6IiBzdHJva2UtZGFzaGFycmF5PSIxMi44Mjk0NDY0MTExMzI4MTIgMTIuODI5NDQ2NDExMTMyODEyIiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2U9IiMxMzc5ZGYiIGZpbGw9Im5vbmUiPgogIDxhbmltYXRlIHZhbHVlcz0iMDsyNTYuNTg4OTI4MjIyNjU2MjUiIGtleVRpbWVzPSIwOzEiIGR1cj0iNXMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIiBhdHRyaWJ1dGVOYW1lPSJzdHJva2UtZGFzaG9mZnNldCI+PC9hbmltYXRlPgo8L3BhdGg+PGc+PC9nPjwvZz48IS0tIFtsZGlvXSBnZW5lcmF0ZWQgYnkgaHR0cHM6Ly9sb2FkaW5nLmlvIC0tPjwvc3ZnPg==" !default;
 
 $spinner-light-stroke:            $light !default;
 $spinner-light-fill:              $light !default;
