@@ -65983,6 +65983,11 @@ IonicModule.directive('select', ['$ionicModal', '$timeout', function($ionicModal
         filterGroups();
         modal.show().then(function() {
           opening = false;
+        }, function() {
+          // Se a promise de exibicao for rejeitada (ex.: scope destruido no meio
+          // da animacao), a flag precisa ser liberada aqui tambem - sem isso o
+          // select para de responder a clique permanentemente.
+          opening = false;
         });
       }
 
