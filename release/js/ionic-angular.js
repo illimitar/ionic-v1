@@ -12648,6 +12648,8 @@ function($timeout, $controller, $ionicBind, $ionicConfig) {
  * changing their native select or Angular model contract.
  */
 IonicModule.directive('select', ['$ionicModal', '$timeout', function($ionicModal, $timeout) {
+  var uid = 0;
+
   return {
     restrict: 'E',
     link: function(scope, element) {
@@ -12657,6 +12659,7 @@ IonicModule.directive('select', ['$ionicModal', '$timeout', function($ionicModal
       var modalScope;
       var display;
       var displayValue;
+      var displayId;
       var observer;
       var opening = false;
 
@@ -12664,8 +12667,9 @@ IonicModule.directive('select', ['$ionicModal', '$timeout', function($ionicModal
         return;
       }
 
+      displayId = 'modernSelectDisplay' + (++uid);
       display = angular.element(
-        '<button type="button" class="modern-select-display" aria-haspopup="dialog">' +
+        '<button type="button" id="' + displayId + '" class="modern-select-display" aria-haspopup="dialog">' +
           '<span class="modern-select-display-value"></span>' +
           '<span class="modern-select-display-action" aria-hidden="true">' +
             '<i class="icon ion-chevron-down"></i>' +
@@ -12679,6 +12683,23 @@ IonicModule.directive('select', ['$ionicModal', '$timeout', function($ionicModal
       element.attr('tabindex', '-1');
       angular.element(container).addClass('modern-select-enhanced');
       container.insertBefore(display[0], select.nextSibling);
+
+      if (container.tagName === 'LABEL') {
+        // O markup padrao deste item e um <label class="item-select"> envolvendo
+        // o <select> diretamente - sem um "for" explicito, o proprio browser
+        // associa esse label ao select automaticamente (HTMLLabelElement.control),
+        // por ser o unico elemento "labelable" ali dentro. O ionic.tap (tap.js)
+        // sobe a arvore a partir de qualquer toque dentro do label procurando
+        // essa associacao (tapContainingElement/tapTargetElement) e, ao resolver
+        // o <select>, chama ele.focus() direto nele (tapHandleFocus - "trick to
+        // force Android options to show up"). No Android esse focus() "descasado"
+        // (disparado ao tocar em outro elemento) e ignorado, mas no iOS/WKWebView
+        // ele abre o picker nativo mesmo assim - causa raiz do item-select ainda
+        // abrindo o seletor nativo so no iOS. Apontar o "for" pro botao visivel
+        // quebra essa associacao implicita: o label passa a "pertencer" ao botao,
+        // nunca mais ao select escondido, em qualquer plataforma.
+        container.setAttribute('for', displayId);
+      }
 
       function getTitle() {
         var label = container.querySelector('.input-label');

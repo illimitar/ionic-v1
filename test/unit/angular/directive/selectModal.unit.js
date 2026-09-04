@@ -31,6 +31,19 @@ describe('Ionic select modal', function() {
     expect(element.hasClass('modern-select-enhanced')).toBe(true);
   });
 
+  it('points the label "for" at the display button, not the hidden select', function() {
+    // Sem isso, HTMLLabelElement.control resolve implicitamente para o
+    // <select> (unico elemento labelable dentro do label) e o ionic.tap
+    // (tapContainingElement/tapTargetElement) usa essa associacao para achar
+    // e focar o select real em qualquer toque dentro do item - no iOS isso
+    // reabre o picker nativo (ver comentario no selectModal.js).
+    var element = createSelect('ng-model="order"');
+    var display = element[0].querySelector('.modern-select-display');
+
+    expect(element.attr('for')).toBe(display.id);
+    expect(element[0].control).toBe(display);
+  });
+
   it('keeps multiple selects native', function() {
     var element = createSelect('multiple');
 
