@@ -11866,6 +11866,23 @@ p,
   opacity: 0.48;
 }
 
+.button-bar {
+  gap: 8px;
+}
+
+.button-bar > .button {
+  border-width: 1px;
+  border-radius: 8px;
+}
+.button-bar > .button:first-child, .button-bar > .button:last-child, .button-bar > .button:only-child {
+  border-radius: 8px;
+}
+
+.bar-footer {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
 .list {
   padding-top: 0;
 }
@@ -11924,7 +11941,9 @@ p,
 }
 
 .card .item:first-child,
-.list-inset .item:first-child {
+.list-inset .item:first-child,
+.card > :first-child:not(.item) + .item,
+.list-inset > :first-child:not(.item) + .item {
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }

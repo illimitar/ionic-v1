@@ -138,6 +138,31 @@ p,
   opacity: .48;
 }
 
+// Barra de botoes no rodape (ex.: Voltar/Proximo dos modulos dinamicos). O
+// `.button-bar` classico gruda os botoes lado a lado, com raio so nas pontas e
+// borda compartilhada entre eles. O tema modern trata cada botao como um
+// controle independente (raio e borda proprios, com espacamento), entao
+// aplicamos o mesmo padrao aqui - sem alterar o layout flex nem a marcacao.
+.button-bar {
+  gap: 8px;
+}
+
+.button-bar > .button {
+  border-width: 1px;
+  border-radius: $modern-radius;
+
+  &:first-child,
+  &:last-child,
+  &:only-child {
+    border-radius: $modern-radius;
+  }
+}
+
+.bar-footer {
+  padding-left: $modern-radius + 4px;
+  padding-right: $modern-radius + 4px;
+}
+
 .list {
   padding-top: 0;
 }
@@ -198,7 +223,9 @@ p,
 }
 
 .card .item:first-child,
-.list-inset .item:first-child {
+.list-inset .item:first-child,
+.card > :first-child:not(.item) + .item,
+.list-inset > :first-child:not(.item) + .item {
   border-top-left-radius: $modern-radius;
   border-top-right-radius: $modern-radius;
 }
