@@ -447,6 +447,28 @@ textarea::-webkit-input-placeholder {
   box-shadow: 0 0 0 3px $modern-focus-ring;
 }
 
+// O select-modal precisa sempre aparecer acima de qualquer modal/popup/action
+// sheet ja aberto (ex.: abrir um select dentro de um $ionicPopup - cujo
+// z-index e maior que o de .modal por padrao no tema classico). O
+// modal-backdrop desta instancia recebe a classe "modern-select-modal-backdrop"
+// em js/angular/directive/selectModal.js; isso nao muda o z-index de nenhum
+// outro modal do app.
+.modern-select-modal-backdrop,
+.modern-select-modal {
+  z-index: $z-index-loading + 1;
+}
+
+// O core (_popup.scss) desabilita pointer-events do .modal quando um
+// $ionicPopup tambem esta aberto, partindo do pressuposto de que popup
+// sempre fica por cima de modal ("&.modal-open .modal { pointer-events:
+// none; }", especificidade de 3 classes): sem isso o select-modal fica
+// visivel (por causa do z-index acima) mas nao clicavel quando aberto a
+// partir de um campo dentro de um popup. Precisamos de pelo menos a mesma
+// especificidade dessa regra pra sobrepor de forma garantida.
+.popup-open.modal-open .modal.modern-select-modal {
+  pointer-events: auto;
+}
+
 .modern-select-modal .bar-header {
   height: 52px;
 }

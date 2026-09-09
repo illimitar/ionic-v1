@@ -12815,6 +12815,12 @@ IonicModule.directive('select', ['$ionicModal', '$timeout', function($ionicModal
             backdropClickToClose: true
           }
         );
+        // modal.el e o proprio wrapper ".modal-backdrop" desta instancia (ver
+        // js/views/modalView.js: this.el = opts.el). Marcar com uma classe
+        // propria deixa o CSS (_modern.scss) sobrepor o z-index so deste
+        // select-modal, sem alterar o z-index generico de ".modal-backdrop"
+        // usado por qualquer outro modal do app.
+        angular.element(modal.el).addClass('modern-select-modal-backdrop');
         modalScope = modal.scope;
         modalScope.close = function() {
           modal.hide();

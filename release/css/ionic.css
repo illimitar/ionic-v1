@@ -12158,6 +12158,15 @@ textarea::-webkit-input-placeholder {
   box-shadow: 0 0 0 3px rgba(56, 126, 245, 0.22);
 }
 
+.modern-select-modal-backdrop,
+.modern-select-modal {
+  z-index: 14;
+}
+
+.popup-open.modal-open .modal.modern-select-modal {
+  pointer-events: auto;
+}
+
 .modern-select-modal .bar-header {
   height: 52px;
 }
