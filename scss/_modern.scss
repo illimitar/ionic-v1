@@ -791,9 +791,32 @@ input[type="time"]:disabled::-webkit-calendar-picker-indicator {
   box-shadow: none;
 }
 
+// ".backdrop" e o elemento compartilhado do $ionicBackdrop (ver
+// js/angular/service/loading.js, popup.js) - $ionicLoading, $ionicPopup e o
+// ion-autocomplete (www/lib/ion-autocomplete do Gestor, tambem usa esse
+// mesmo servico) so retem/liberam o backdrop, sem marcar nenhuma classe
+// propria, entao os tres caem nessa regra. ".action-sheet-backdrop" e um
+// elemento a parte (proprio do action-sheet), mas segue o mesmo tratamento
+// visual. Em vez do escurecimento do core (rgba(0,0,0,.4)/rgba(23,32,51,.52)
+// respectivamente), os dois usam o mesmo efeito translucido/borrado (frosted
+// glass) do $ionicModal (ver ".modal-backdrop-bg" abaixo). Sem suporte a
+// backdrop-filter, degrada bem pro tom claro sem blur (nunca escurece).
 .backdrop,
 .action-sheet-backdrop.active {
-  background-color: rgba(23, 32, 51, .52);
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+}
+
+// O core tem um tom especifico pro Android (rgba(0,0,0,.2), mais claro que o
+// padrao) com especificidade maior que a regra acima (".platform-android"
+// tambem entra na conta) - sem esse reforco aqui, o action-sheet no Android
+// ficaria escurecido em vez do mesmo frosted glass usado nas outras
+// plataformas/overlays.
+.platform-android .action-sheet-backdrop.active {
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
 }
 
 .popup-container .popup {
@@ -860,19 +883,6 @@ input[type="time"]:disabled::-webkit-calendar-picker-indicator {
   }
 }
 
-// $ionicLoading usa o $ionicBackdrop compartilhado (classe ".backdrop",
-// tambem usado por popup/action-sheet/etc.) e marca com ".backdrop-loading"
-// enquanto esta ativo (ver js/angular/service/loading.js). O core escurece
-// o fundo (rgba(0,0,0,.4) via $loading-backdrop-bg-color) - aqui, so pra
-// esse caso especifico, troca por um efeito translucido/borrado (frosted
-// glass) em vez de escurecer. Nao afeta o backdrop padrao de popup/modal/
-// action-sheet, que continua escurecendo normalmente.
-.backdrop.backdrop-loading {
-  background-color: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-}
-
 .modal {
   background-color: $modern-page-bg;
 }
@@ -885,8 +895,8 @@ input[type="time"]:disabled::-webkit-calendar-picker-indicator {
     box-shadow: $modern-shadow-large;
   }
 
-  // Mesmo espirito do backdrop do $ionicLoading (ver ".backdrop-loading"
-  // acima): troca o escurecimento do core (#000 via
+  // Mesmo espirito do backdrop compartilhado (ver ".backdrop" acima): troca
+  // o escurecimento do core (#000 via
   // $modal-backdrop-bg-active, com ".active .modal-backdrop-bg" indo a 50%
   // de opacity) por um efeito translucido/borrado (frosted glass), pra
   // qualquer $ionicModal (login, cenario, entidade, select-modal etc.). O

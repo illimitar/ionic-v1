@@ -12450,7 +12450,15 @@ input[type=time]:disabled::-webkit-calendar-picker-indicator {
 
 .backdrop,
 .action-sheet-backdrop.active {
-  background-color: rgba(23, 32, 51, 0.52);
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+}
+
+.platform-android .action-sheet-backdrop.active {
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
 }
 
 .popup-container .popup {
@@ -12513,12 +12521,6 @@ input[type=time]:disabled::-webkit-calendar-picker-indicator {
 .loading-container .loading .spinner {
   width: 64px;
   height: 64px;
-}
-
-.backdrop.backdrop-loading {
-  background-color: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
 }
 
 .modal {
