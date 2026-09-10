@@ -2873,6 +2873,22 @@ function($rootScope, $ionicBody, $compile, $timeout, $ionicPlatform, $ionicTempl
       if (index > -1 && index < modalStack.length) {
         modalStack.splice(index, 1);
       }
+      // $ionicPopup tambem participa desta stack compartilhada
+      // ($ionicModal.stack.add/remove, ver popup.js) para coordenar
+      // z-index/backdrop-click com modals - mas so o hide() do proprio
+      // $ionicModal (abaixo) limpava a classe "modal-open" do body, e so
+      // quando ELE fechava por ultimo. Se um modal (ex.: select-modal) e
+      // aberto de dentro de um popup e fechado ANTES do popup, o popup
+      // fecha por ultimo via popup.js - que nunca repete essa limpeza -
+      // deixando o body com pointer-events:none pra sempre (app trava).
+      // Centralizar aqui garante a limpeza no momento exato em que a
+      // stack compartilhada esvazia, nao importa quem foi removido por
+      // ultimo.
+      $timeout(function() {
+        if (!modalStack.length) {
+          $ionicBody.removeClass('modal-open');
+        }
+      }, 320, false);
     },
     isHighest: function(modal) {
       var index = modalStack.indexOf(modal);
