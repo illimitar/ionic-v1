@@ -4199,34 +4199,48 @@ function keyboardShow() {
 }
 
 /**
+ * Ancestor containers that can each hold their own fixed footer bar - a
+ * normal view (".pane"), the side menu ("ion-side-menu"), a modal, a popup.
+ * See keyboardAdjustFixedFooter.
+ */
+var FIXED_FOOTER_CONTAINER_CSS = '.pane, ion-side-menu, .modal, .popup, body';
+
+/**
  * A fixed footer bar (ion-footer-bar, ".bar-footer") is "position:absolute;
  * bottom:0" relative to its pane - it stays put on its own when the keyboard
  * opens, unlike scroll view content (which keyboardShow already handles via
- * "scrollChildIntoView" above). That's not a problem where the native webview
- * actually resizes for the keyboard (window.innerHeight shrinks and "bottom:0"
- * naturally ends up right above it - the normal case on Android), but with
- * native resize disabled - as the Gestor app runs on iOS, see
- * "KeyboardResize" in config.xml, needed to avoid a black-screen bug - nothing
- * shrinks and the footer stays exactly where it was, hidden behind the
- * keyboard. Manually shift it up by the keyboard height to compensate.
+ * "scrollChildIntoView" above, and only for inputs inside a scroll view - the
+ * side menu's own search field, for one, sits outside any scroll view).
+ * That's not a problem where the native webview actually resizes for the
+ * keyboard (window.innerHeight shrinks and "bottom:0" naturally ends up right
+ * above it - the normal case on Android), but with native resize disabled -
+ * as the Gestor app runs on iOS, see "KeyboardResize" in config.xml, needed to
+ * avoid a black-screen bug - nothing shrinks and the footer stays exactly
+ * where it was, hidden behind the keyboard. Manually shift it up by the
+ * keyboard height to compensate.
+ *
+ * More than one ".bar-footer" can exist in the DOM at once (a previous view
+ * kept around by the nav-view cache, the side menu's own footer sitting
+ * behind/above the main content, ...), so picking "the first one found" can
+ * grab one that has nothing to do with the field being typed into. Instead,
+ * scope the search to the focused element's own container (its pane, the
+ * side menu, a modal...) so only that container's footer moves.
  */
 function keyboardAdjustFixedFooter(keyboardHeight) {
-  if (!ionic.Platform.isIOS() || !keyboardHeight) return;
+  if (!ionic.Platform.isIOS() || !keyboardHeight || !document.activeElement) return;
 
-  // pode haver mais de um ".bar-footer" no DOM (views em cache do nav-view) -
-  // so a visivel (offsetParent != null) importa
-  var footers = document.getElementsByClassName(FIXED_FOOTER_CSS);
-  for (var i = 0; i < footers.length; i++) {
-    if (footers[i].offsetParent) {
-      footers[i].style[ionic.CSS.TRANSITION] = ionic.CSS.TRANSFORM + ' 150ms ease-in-out';
-      footers[i].style[ionic.CSS.TRANSFORM] = 'translate3d(0,' + (-keyboardHeight) + 'px,0)';
-      break;
-    }
+  var container = document.activeElement.closest(FIXED_FOOTER_CONTAINER_CSS);
+  var footer = container && container.querySelector('.' + FIXED_FOOTER_CSS);
+  if (footer) {
+    footer.style[ionic.CSS.TRANSITION] = ionic.CSS.TRANSFORM + ' 150ms ease-in-out';
+    footer.style[ionic.CSS.TRANSFORM] = 'translate3d(0,' + (-keyboardHeight) + 'px,0)';
   }
 }
 
 /**
- * Undoes keyboardAdjustFixedFooter once the keyboard closes.
+ * Undoes keyboardAdjustFixedFooter once the keyboard closes. Resets every
+ * ".bar-footer", not just the one under the (by then possibly already
+ * blurred/gone) active element.
  */
 function keyboardResetFixedFooter() {
   var footers = document.getElementsByClassName(FIXED_FOOTER_CSS);
