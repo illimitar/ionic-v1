@@ -11957,6 +11957,9 @@ p,
 .list-inset:not(:has(> .item ~ .item)) {
   padding: 10px;
 }
+.list-inset:not(:has(> .item ~ .item)):has(> .item-stacked-label:only-child), .list-inset:not(:has(> .item ~ .item)):has(> .item-floating-label:only-child) {
+  padding: 0;
+}
 
 input,
 textarea,

@@ -247,6 +247,18 @@ p,
 // respiro nesses casos; listas de verdade continuam coladas.
 .list-inset:not(:has(> .item ~ .item)) {
   padding: $content-padding;
+
+  // Excecao: quando o unico filho e um campo empilhado/flutuante
+  // (.item-stacked-label/.item-floating-label - ver blocos abaixo), o
+  // proprio campo ja tem seu padding (label + input com respiro
+  // interno) - o padding extra do card por cima soma com o do campo e
+  // deixa um vao grande e desproporcional entre a borda do card e a
+  // borda do input (mais visivel agora que o wrapper do campo ficou
+  // sem borda propria). Nesse caso quem da o respiro e so o campo.
+  &:has(> .item-stacked-label:only-child),
+  &:has(> .item-floating-label:only-child) {
+    padding: 0;
+  }
 }
 
 input,
