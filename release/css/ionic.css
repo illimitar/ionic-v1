@@ -12508,6 +12508,12 @@ input[type=time]:disabled::-webkit-calendar-picker-indicator {
   height: 64px;
 }
 
+.backdrop.backdrop-loading {
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+}
+
 .modal {
   background-color: #f3f6fa;
 }

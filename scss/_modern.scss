@@ -835,6 +835,19 @@ input[type="time"]:disabled::-webkit-calendar-picker-indicator {
   }
 }
 
+// $ionicLoading usa o $ionicBackdrop compartilhado (classe ".backdrop",
+// tambem usado por popup/action-sheet/etc.) e marca com ".backdrop-loading"
+// enquanto esta ativo (ver js/angular/service/loading.js). O core escurece
+// o fundo (rgba(0,0,0,.4) via $loading-backdrop-bg-color) - aqui, so pra
+// esse caso especifico, troca por um efeito translucido/borrado (frosted
+// glass) em vez de escurecer. Nao afeta o backdrop padrao de popup/modal/
+// action-sheet, que continua escurecendo normalmente.
+.backdrop.backdrop-loading {
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+}
+
 .modal {
   background-color: $modern-page-bg;
 }
