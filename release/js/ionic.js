@@ -3756,7 +3756,7 @@ ionic.keyboard = {
    */
   hide: function() {
     if (keyboardHasPlugin()) {
-      cordova.plugins.Keyboard.close();
+      keyboardGetPlugin().close();
     }
     keyboardActiveElement && keyboardActiveElement.blur();
   },
@@ -3767,7 +3767,7 @@ ionic.keyboard = {
    */
   show: function() {
     if (keyboardHasPlugin()) {
-      cordova.plugins.Keyboard.show();
+      keyboardGetPlugin().show();
     }
   },
 
@@ -4144,7 +4144,7 @@ function keyboardHide() {
   if (ionic.Platform.isAndroid()) {
     // on android closing the keyboard with the back/dismiss button won't remove
     // focus and keyboard can re-appear on subsequent taps (like scrolling)
-    if (keyboardHasPlugin()) cordova.plugins.Keyboard.close();
+    if (keyboardHasPlugin()) keyboardGetPlugin().close();
     keyboardActiveElement && keyboardActiveElement.blur();
   }
 
@@ -4234,6 +4234,12 @@ function keyboardAdjustFixedFooter(keyboardHeight) {
   if (footer) {
     footer.style[ionic.CSS.TRANSITION] = ionic.CSS.TRANSFORM + ' 150ms ease-in-out';
     footer.style[ionic.CSS.TRANSFORM] = 'translate3d(0,' + (-keyboardHeight) + 'px,0)';
+    // dentro de ion-side-menu, ".scroll-content" do proprio menu tem
+    // z-index mais alto que ".bar-footer" (10/11 vs 9 - ver
+    // "$z-index-menu-scroll-content"/"$z-index-scroll-content-false" em
+    // _variables.scss) - sem isso, a barra sobe mas fica escondida atras
+    // do conteudo do menu, que ocupa a mesma area depois do deslocamento.
+    footer.style.zIndex = 20;
   }
 }
 
@@ -4247,6 +4253,7 @@ function keyboardResetFixedFooter() {
   for (var i = 0; i < footers.length; i++) {
     footers[i].style[ionic.CSS.TRANSFORM] = '';
     footers[i].style[ionic.CSS.TRANSITION] = '';
+    footers[i].style.zIndex = '';
   }
 }
 
@@ -4361,8 +4368,22 @@ function getViewportHeight() {
   return windowHeight;
 }
 
+// O fork do plugin usado no Gestor (github:illimitar/cordova-plugin-ionic-keyboard,
+// ver plugins-maintenance/cordova-plugin-ionic-keyboard/plugin.xml) expoe o
+// objeto do teclado em "window.Keyboard" (clobbers do plugin antigo,
+// "ionic-plugin-keyboard"), nao em "cordova.plugins.Keyboard" (o padrao do
+// plugin atual, que e o que o resto deste arquivo pressupoe). Sem essa
+// segunda checagem, keyboardHasPlugin() sempre retorna false nesse app -
+// keyboardInit() nunca registra "native.keyboardshow"/"native.keyboardhide"
+// (usa so o fallback de focusout, sem altura real de teclado), e todo ajuste
+// de teclado (scroll do input, footer fixo - ver keyboardAdjustFixedFooter)
+// fica sem disparo confiavel.
+function keyboardGetPlugin() {
+  return (window.cordova && cordova.plugins && cordova.plugins.Keyboard) || window.Keyboard || null;
+}
+
 function keyboardHasPlugin() {
-  return !!(window.cordova && cordova.plugins && cordova.plugins.Keyboard);
+  return !!keyboardGetPlugin();
 }
 
 ionic.Platform.ready(function() {
