@@ -11954,6 +11954,10 @@ p,
   border-bottom-left-radius: 8px;
 }
 
+.list-inset:not(:has(> .item ~ .item)) {
+  padding: 10px;
+}
+
 input,
 textarea,
 select {

@@ -236,6 +236,19 @@ p,
   border-bottom-left-radius: $modern-radius;
 }
 
+// Modulos dinamicos usam ".list-inset" tambem pra "uma linha" so de
+// conteudo solto - heading + campo unico (.item-input/.item-select),
+// heading + lista aninhada (<ion-list><div class="list">), heading +
+// button-bar - sem nenhum .item filho direto que va "de ponta a ponta" do
+// card. O efeito classico "colado na borda" (sem padding) so faz sentido
+// numa lista de verdade, com 2+ .item empilhados (ex.: o Formulario da
+// demo, ou qualquer lista de selecao) - fora isso, o conteudo fica
+// literalmente encostado na borda do card, o que le como quebrado. Da
+// respiro nesses casos; listas de verdade continuam coladas.
+.list-inset:not(:has(> .item ~ .item)) {
+  padding: $content-padding;
+}
+
 input,
 textarea,
 select {
