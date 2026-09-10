@@ -3704,6 +3704,13 @@ var KEYBOARD_OPEN_CSS = 'keyboard-open';
 var SCROLL_CONTAINER_CSS = 'scroll-content';
 
 /**
+ * CSS class of a fixed footer bar (ion-footer-bar). "position:absolute;
+ * bottom:0" relative to its pane, then never moves on its own - see
+ * keyboardAdjustFixedFooter.
+ */
+var FIXED_FOOTER_CSS = 'bar-footer';
+
+/**
  * Debounced keyboardFocusIn function
  */
 var debouncedKeyboardFocusIn = ionic.debounce(keyboardFocusIn, 200, true);
@@ -4121,6 +4128,8 @@ function keyboardHide() {
   ionic.keyboard.isOpen = false;
   ionic.keyboard.isClosing = false;
 
+  keyboardResetFixedFooter();
+
   if (keyboardActiveElement || lastKeyboardActiveElement) {
     ionic.trigger('resetScrollView', {
       target: keyboardActiveElement || lastKeyboardActiveElement
@@ -4187,11 +4196,51 @@ function keyboardShow() {
     ionic.trigger('scrollChildIntoView', details, true);
   }
 
+  keyboardAdjustFixedFooter(details.keyboardHeight);
+
   setTimeout(function(){
     document.body.classList.add(KEYBOARD_OPEN_CSS);
   }, 400);
 
   return details; //for testing
+}
+
+/**
+ * A fixed footer bar (ion-footer-bar, ".bar-footer") is "position:absolute;
+ * bottom:0" relative to its pane - it stays put on its own when the keyboard
+ * opens, unlike scroll view content (which keyboardShow already handles via
+ * "scrollChildIntoView" above). That's not a problem where the native webview
+ * actually resizes for the keyboard (window.innerHeight shrinks and "bottom:0"
+ * naturally ends up right above it - the normal case on Android), but with
+ * native resize disabled - as the Gestor app runs on iOS, see
+ * "KeyboardResize" in config.xml, needed to avoid a black-screen bug - nothing
+ * shrinks and the footer stays exactly where it was, hidden behind the
+ * keyboard. Manually shift it up by the keyboard height to compensate.
+ */
+function keyboardAdjustFixedFooter(keyboardHeight) {
+  if (!ionic.Platform.isIOS() || !keyboardHeight) return;
+
+  // pode haver mais de um ".bar-footer" no DOM (views em cache do nav-view) -
+  // so a visivel (offsetParent != null) importa
+  var footers = document.getElementsByClassName(FIXED_FOOTER_CSS);
+  for (var i = 0; i < footers.length; i++) {
+    if (footers[i].offsetParent) {
+      footers[i].style[ionic.CSS.TRANSITION] = ionic.CSS.TRANSFORM + ' 150ms ease-in-out';
+      footers[i].style[ionic.CSS.TRANSFORM] = 'translate3d(0,' + (-keyboardHeight) + 'px,0)';
+      break;
+    }
+  }
+}
+
+/**
+ * Undoes keyboardAdjustFixedFooter once the keyboard closes.
+ */
+function keyboardResetFixedFooter() {
+  var footers = document.getElementsByClassName(FIXED_FOOTER_CSS);
+  for (var i = 0; i < footers.length; i++) {
+    footers[i].style[ionic.CSS.TRANSFORM] = '';
+    footers[i].style[ionic.CSS.TRANSITION] = '';
+  }
 }
 
 /* eslint no-unused-vars:0 */
