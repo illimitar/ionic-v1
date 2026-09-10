@@ -286,6 +286,22 @@ textarea::-webkit-input-placeholder {
   padding-left: 10px;
 }
 
+// Alguns modulos dinamicos colocam a classe "item-input-wrapper" direto no
+// <input> (em vez de usa-la so como o <label>/wrapper de um input interno,
+// que e o uso classico do core - ver _bar.scss ".item-input-inset
+// .item-input-wrapper input") dentro de um ion-header-bar/ion-footer-bar.
+// O min-height:40px acima, pensado pra um campo de formulario avulso fora
+// de uma bar, nao cabe na altura fixa da bar (44px, ~34px uteis depois do
+// padding de $bar-padding-portrait) e faz o campo "estourar" pra fora dela.
+// Ajusta a altura pra caber na bar nesse contexto, preservando a largura e
+// o respiro horizontal.
+.bar .item-input-wrapper {
+  min-height: 0;
+  height: 100%;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .item-input:not(.item-stacked-label):focus-within,
 .item-input-wrapper:focus-within {
   border-color: $positive;

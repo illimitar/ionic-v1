@@ -11996,6 +11996,13 @@ textarea::-webkit-input-placeholder {
   padding-left: 10px;
 }
 
+.bar .item-input-wrapper {
+  min-height: 0;
+  height: 100%;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .item-input:not(.item-stacked-label):focus-within,
 .item-input-wrapper:focus-within {
   border-color: #387ef5;
