@@ -859,6 +859,26 @@ input[type="time"]:disabled::-webkit-calendar-picker-indicator {
     border-radius: $modern-radius-large;
     box-shadow: $modern-shadow-large;
   }
+
+  // Mesmo espirito do backdrop do $ionicLoading (ver ".backdrop-loading"
+  // acima): troca o escurecimento do core (#000 via
+  // $modal-backdrop-bg-active, com ".active .modal-backdrop-bg" indo a 50%
+  // de opacity) por um efeito translucido/borrado (frosted glass), pra
+  // qualquer $ionicModal (login, cenario, entidade, select-modal etc.). O
+  // core so mostra esse backdrop no modo "inset" (>= $modal-inset-mode-
+  // break-point) - em telas menores o modal cobre a tela toda e o backdrop
+  // fica atras, invisivel. Opacity-alvo vira 1 porque a translucidez agora
+  // vem do proprio background-color (senao o core reduziria ela pela
+  // metade de novo, ficando fraca demais).
+  .modal-backdrop-bg {
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+  }
+
+  .active .modal-backdrop-bg {
+    opacity: 1;
+  }
 }
 
 .action-sheet-wrapper {

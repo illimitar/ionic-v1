@@ -12525,6 +12525,14 @@ input[type=time]:disabled::-webkit-calendar-picker-indicator {
     border-radius: 12px;
     box-shadow: 0 18px 48px rgba(23, 32, 51, 0.18);
   }
+  .modal-backdrop-bg {
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+  }
+  .active .modal-backdrop-bg {
+    opacity: 1;
+  }
 }
 .action-sheet-wrapper {
   padding: 8px;
