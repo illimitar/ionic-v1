@@ -12014,6 +12014,10 @@ textarea::-webkit-input-placeholder {
   padding: 8px 16px;
 }
 
+.item-stacked-label {
+  border-color: transparent;
+  background-color: transparent;
+}
 .item-stacked-label .input-label {
   display: block;
   width: 100%;

@@ -313,7 +313,20 @@ textarea::-webkit-input-placeholder {
   padding: 8px 16px;
 }
 
+// O .item-stacked-label (label + input empilhados) ja usa o proprio
+// <input> como a "caixa" visivel do campo (border, radius, foco - ver
+// "input:focus" abaixo). O .item que envolve o label tambem ganha border/
+// background por ser um .item comum (regra generica acima) - como esse
+// wrapper nunca fica focado (so o input, de proposito, ver excecao no
+// ":not(.item-stacked-label):focus-within" acima), sobra uma segunda
+// borda cinza parada bem colada (8px de padding) na borda do input, que
+// fica azul ao focar - duas bordas de cores diferentes lado a lado. Tira
+// a borda/fundo do wrapper externo; quem desenha a caixa do campo e so o
+// input.
 .item-stacked-label {
+  border-color: transparent;
+  background-color: transparent;
+
   .input-label {
     display: block;
     width: 100%;
