@@ -4232,8 +4232,17 @@ function keyboardAdjustFixedFooter(keyboardHeight) {
   var container = document.activeElement.closest(FIXED_FOOTER_CONTAINER_CSS);
   var footer = container && container.querySelector('.' + FIXED_FOOTER_CSS);
   if (footer) {
+    // Em repouso a barra ja reserva, no proprio CSS do app, um respiro
+    // extra embaixo dos botoes do tamanho do "home indicator" do iPhone
+    // (env(safe-area-inset-bottom)), pra nao ficar colada nele. Deslocando
+    // so pela altura do teclado, esse respiro (que so faz sentido colado
+    // na borda fisica da tela) sobra entre os botoes e o teclado, ja que
+    // ali nao ha home indicator pra evitar. Desconta o inset do
+    // deslocamento pra colar os botoes no teclado, igual eles ja ficam
+    // colados no home indicator em repouso.
+    var offset = keyboardHeight - keyboardGetSafeAreaInsetBottom();
     footer.style[ionic.CSS.TRANSITION] = ionic.CSS.TRANSFORM + ' 150ms ease-in-out';
-    footer.style[ionic.CSS.TRANSFORM] = 'translate3d(0,' + (-keyboardHeight) + 'px,0)';
+    footer.style[ionic.CSS.TRANSFORM] = 'translate3d(0,' + (-offset) + 'px,0)';
     // dentro de ion-side-menu, ".scroll-content" do proprio menu tem
     // z-index mais alto que ".bar-footer" (10/11 vs 9 - ver
     // "$z-index-menu-scroll-content"/"$z-index-scroll-content-false" em
@@ -4241,6 +4250,21 @@ function keyboardAdjustFixedFooter(keyboardHeight) {
     // do conteudo do menu, que ocupa a mesma area depois do deslocamento.
     footer.style.zIndex = 20;
   }
+}
+
+/**
+ * Le o "env(safe-area-inset-bottom)" (respiro do home indicator do iPhone)
+ * em pixels, via um elemento de sondagem - o valor nao muda durante a
+ * sessao (so numa rotacao/troca de dispositivo), mas reler a cada chamada
+ * e barato e evita guardar estado que poderia ficar desatualizado.
+ */
+function keyboardGetSafeAreaInsetBottom() {
+  var probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;bottom:0;height:0;margin:0;border:0;padding:0;padding-bottom:env(safe-area-inset-bottom);visibility:hidden;pointer-events:none;';
+  document.body.appendChild(probe);
+  var inset = parseFloat(getComputedStyle(probe).paddingBottom) || 0;
+  document.body.removeChild(probe);
+  return inset;
 }
 
 /**
